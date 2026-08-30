@@ -62,6 +62,9 @@ dotnet run --project src/KindleMount
 dotnet publish src/KindleMount -c Release -o dist
 ```
 
+`publish` を実行すると、発行成果物一式が `artifacts/KindleMount-<Version>-win-x64.zip`
+としても自動的にzip化されます (`KindleMount.csproj` の `ZipPublishOutput` ターゲット)。
+
 ## 使い方
 
 1. `KindleMount.exe` を起動するとタスクトレイに常駐します。

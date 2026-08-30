@@ -26,4 +26,15 @@
     <PackageReference Include="MediaDevices" Version="2.0.0" />
   </ItemGroup>
 
+  <Target Name="ZipPublishOutput" AfterTargets="Publish">
+    <PropertyGroup>
+      <ReleaseZipDir>$(MSBuildProjectDirectory)\..\..\artifacts</ReleaseZipDir>
+      <ReleaseZipPath>$(ReleaseZipDir)\KindleMount-$(Version)-win-x64.zip</ReleaseZipPath>
+    </PropertyGroup>
+    <MakeDir Directories="$(ReleaseZipDir)" />
+    <Delete Files="$(ReleaseZipPath)" Condition="Exists('$(ReleaseZipPath)')" />
+    <ZipDirectory SourceDirectory="$(PublishDir)" DestinationFile="$(ReleaseZipPath)" Overwrite="true" />
+    <Message Importance="high" Text="Release zip created: $(ReleaseZipPath)" />
+  </Target>
+
 </Project>
