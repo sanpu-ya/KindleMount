@@ -3,3 +3,4 @@ obj/
 dist/
 artifacts/
 *.user
+.vs
