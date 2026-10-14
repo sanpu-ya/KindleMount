@@ -19,7 +19,9 @@ public sealed class TrayApplicationContext : ApplicationContext
     {
         _settings = settings;
 
-        _menu = new ContextMenuStrip { ShowImageMargin = false };
+        // ShowImageMargin = false だけにすると Checked のチェックマークを描く余白ごと消えてしまう。
+        // アイコン用の余白は要らないがチェックは見せたいので、チェック余白だけ有効にする。
+        _menu = new ContextMenuStrip { ShowImageMargin = false, ShowCheckMargin = true };
         _menu.Opening += (_, _) => BuildMenu();
 
         _notifyIcon = new NotifyIcon
