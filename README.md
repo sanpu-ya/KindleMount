@@ -134,6 +134,12 @@ Kindle Paperwhite Signature Edition (`VID_1949&PID_9981`, 26 GB) + Dokany 2.3 / 
 | `allowAnyMtpDevice` | `false` | Kindle 以外の MTP デバイスもマウント対象にする |
 | `verboseLogging` | `false` | 詳細ログ + Dokan のデバッグ出力 |
 
+**自動起動 (Windows サインイン時の実行) はこの表に含まれません。** settings.json ではなく
+`HKCU\Software\Microsoft\Windows\CurrentVersion\Run` の `KindleMount` 値が唯一の情報源で、
+既定は無効です。切り替えはトレイメニューの「Windows 起動時に実行」か設定ダイアログの
+「Windows のサインイン時に自動起動する」から行います
+(→ [自動起動 (スタートアップ)](#自動起動-スタートアップ))。
+
 ログ: `%APPDATA%\KindleMount\logs\kindlemount.log`
 キャッシュ: `%LOCALAPPDATA%\KindleMount\cache\`
 
