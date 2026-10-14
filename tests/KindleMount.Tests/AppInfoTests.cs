@@ -49,12 +49,12 @@ public class AppInfoTests
     [Fact]
     public void DisplayVersion_MatchesAssemblyVersion()
     {
-        Assert.Equal("v0.1", AppInfo.DisplayVersion);
+        Assert.Equal("v0.2", AppInfo.DisplayVersion);
     }
 
     [Fact]
     public void NameWithVersion_CombinesNameAndVersion()
     {
-        Assert.Equal("KindleMount v0.1", AppInfo.NameWithVersion);
+        Assert.Equal("KindleMount v0.2", AppInfo.NameWithVersion);
     }
 }
