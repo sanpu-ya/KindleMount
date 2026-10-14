@@ -74,6 +74,18 @@ dotnet publish src/KindleMount -c Release -o dist
 4. トレイアイコンを右クリックすると、マウント中のドライブを開く・安全に取り外す・
    設定変更などが行えます。ダブルクリックで最初のドライブが開きます。
 
+### 自動起動 (スタートアップ)
+
+トレイメニューの「Windows 起動時に実行」または設定ダイアログの
+「Windows のサインイン時に自動起動する」で切り替えます。登録先は
+`HKCU\Software\Microsoft\Windows\CurrentVersion\Run` の `KindleMount` 値で、
+現在の `KindleMount.exe` の絶対パスを引用符付きで書き込みます (管理者権限は不要)。
+
+登録の有無はレジストリが唯一の情報源で、`settings.json` には持ちません
+(タスクマネージャーの「スタートアップ アプリ」などから無効化されたときに食い違うため)。
+登録済みの状態で exe を別フォルダへ移動・更新した場合は、次回起動時に
+`StartupRegistration.Synchronize()` がパスを書き直します。
+
 ### 診断モード
 
 デバイスが認識されないときは、コンソールから次を実行すると検出状況を確認できます。
@@ -219,4 +231,5 @@ Dokan は複数のワーカースレッドからコールバックするため�
 | `Mounting/MountService.cs` | 検知結果とマウント状態の突き合わせ |
 | `Mounting/MountSession.cs` | デバイス 1 台分のマウント/アンマウント |
 | `Tray/` | トレイ常駐 UI と設定ダイアログ |
+| `Startup/StartupRegistration.cs` | スタートアップ (HKCU Run キー) への登録・解除・パス追従 |
 | `Diagnostics/ConsoleDiagnostics.cs` | `--scan` の診断出力 |

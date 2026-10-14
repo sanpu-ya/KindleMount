@@ -1,5 +1,6 @@
 using KindleMount.Logging;
 using KindleMount.Mounting;
+using KindleMount.Startup;
 using KindleMount.Tray;
 using System.Diagnostics;
 
@@ -37,6 +38,9 @@ internal static class Program
 
         var settings = AppSettings.Load(AppPaths.SettingsFile);
         Log.MinimumLevel = settings.VerboseLogging ? LogLevel.Debug : LogLevel.Info;
+
+        // 自動起動を登録済みなら、exe の移動や更新でパスがずれていないか直しておく。
+        StartupRegistration.Synchronize();
 
         ApplicationConfiguration.Initialize();
         Application.SetUnhandledExceptionMode(UnhandledExceptionMode.CatchException);

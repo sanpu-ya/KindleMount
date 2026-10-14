@@ -1,6 +1,7 @@
 ﻿using KindleMount.Devices;
 using KindleMount.Logging;
 using KindleMount.Mounting;
+using KindleMount.Startup;
 using System.Diagnostics;
 
 namespace KindleMount.Tray;
@@ -127,6 +128,24 @@ public sealed class TrayApplicationContext : ApplicationContext
             }
         };
         _menu.Items.Add(autoMount);
+
+        if (StartupRegistration.IsSupported)
+        {
+            var runAtStartup = new ToolStripMenuItem("Windows 起動時に実行")
+            {
+                Checked = StartupRegistration.IsEnabled(),
+                CheckOnClick = true,
+            };
+            runAtStartup.Click += (_, _) =>
+            {
+                if (!StartupRegistration.SetEnabled(runAtStartup.Checked))
+                {
+                    // 書き込めなかったときは実際の状態へ戻す。
+                    runAtStartup.Checked = StartupRegistration.IsEnabled();
+                }
+            };
+            _menu.Items.Add(runAtStartup);
+        }
 
         _menu.Items.Add("設定...", null, (_, _) => ShowSettings());
         _menu.Items.Add("ログを開く", null, (_, _) => OpenPath(Log.FilePath ?? AppPaths.LogDirectory));

@@ -1,4 +1,6 @@
-﻿namespace KindleMount.Tray;
+﻿using KindleMount.Startup;
+
+namespace KindleMount.Tray;
 
 /// <summary>設定ダイアログ。デザイナを使わずコードで組む(単一ファイルで完結させるため)。</summary>
 public sealed class SettingsForm : Form
@@ -16,6 +18,12 @@ public sealed class SettingsForm : Form
         AutoSize = true,
     };
     private readonly CheckBox _anyMtp = new() { Text = "Kindle 以外の MTP デバイスも対象にする", AutoSize = true };
+    private readonly CheckBox _runAtStartup = new()
+    {
+        Text = "Windows のサインイン時に自動起動する",
+        AutoSize = true,
+        Enabled = StartupRegistration.IsSupported,
+    };
     private readonly CheckBox _verbose = new() { Text = "詳細ログを記録する", AutoSize = true };
 
     private readonly TextBox _driveLetters = new() { Width = 200 };
@@ -34,7 +42,7 @@ public sealed class SettingsForm : Form
         MaximizeBox = false;
         MinimizeBox = false;
         AutoScaleMode = AutoScaleMode.Dpi;
-        ClientSize = new Size(460, 470);
+        ClientSize = new Size(460, 495);
         Icon = TrayIcons.Active;
 
         var layout = new TableLayoutPanel
@@ -78,6 +86,7 @@ public sealed class SettingsForm : Form
         AddLabeled("定期スキャン間隔 (秒 / 0 で無効)", _pollInterval);
 
         AddFullWidth(SectionLabel("その他"));
+        AddFullWidth(_runAtStartup);
         AddFullWidth(_verbose);
 
         var note = new Label
@@ -128,6 +137,7 @@ public sealed class SettingsForm : Form
         _removable.Checked = _settings.RemovableDrive;
         _mountManager.Checked = _settings.UseMountManager;
         _anyMtp.Checked = _settings.AllowAnyMtpDevice;
+        _runAtStartup.Checked = StartupRegistration.IsEnabled();
         _verbose.Checked = _settings.VerboseLogging;
         _driveLetters.Text = _settings.PreferredDriveLetters;
         _volumeLabel.Text = _settings.VolumeLabel;
@@ -138,6 +148,8 @@ public sealed class SettingsForm : Form
 
     private void Apply()
     {
+        ApplyStartupRegistration();
+
         _settings.AutoMount = _autoMount.Checked;
         _settings.OpenExplorerOnMount = _openExplorer.Checked;
         _settings.ShowNotifications = _notifications.Checked;
@@ -151,5 +163,31 @@ public sealed class SettingsForm : Form
         _settings.FileCacheLimitMegabytes = (int)_cacheLimit.Value;
         _settings.DirectoryCacheSeconds = (int)_dirCache.Value;
         _settings.PollIntervalSeconds = (int)_pollInterval.Value;
+    }
+
+    /// <summary>
+    /// 自動起動だけは settings.json ではなくレジストリの Run キーが情報源なので、
+    /// 変化したときにその場で書き込む。失敗したら黙らずに知らせる。
+    /// </summary>
+    private void ApplyStartupRegistration()
+    {
+        if (!StartupRegistration.IsSupported || _runAtStartup.Checked == StartupRegistration.IsEnabled())
+        {
+            return;
+        }
+
+        if (StartupRegistration.SetEnabled(_runAtStartup.Checked))
+        {
+            return;
+        }
+
+        MessageBox.Show(
+            this,
+            _runAtStartup.Checked
+                ? "自動起動の登録に失敗しました。"
+                : "自動起動の解除に失敗しました。",
+            AppInfo.Name,
+            MessageBoxButtons.OK,
+            MessageBoxIcon.Warning);
     }
 }
